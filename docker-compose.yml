@@ -1,0 +1,37 @@
+services:
+  mysqldb:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: taskflow
+      MYSQL_USER: taskflow
+      MYSQL_PASSWORD: taskflow
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+  
+  java-app:
+    build: .
+    container_name: java-app
+    environment:
+       DB_HOST: mysqldb
+       DB_PORT: "3306"
+       DB_NAME: taskflow
+       DB_USER: taskflow
+       DB_PASSWORD: taskflow
+    ports:
+      - "8081:8080"
+    networks:
+      - app-network
+    depends_on:
+      - mysqldb
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
